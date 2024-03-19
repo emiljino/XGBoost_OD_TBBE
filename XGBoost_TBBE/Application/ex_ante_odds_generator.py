@@ -9,7 +9,7 @@ from race_simulator import Simulator
 from exchange import Exchange
 from message_protocols import *
 
-'''
+"""
 
 To most accurately simulate the precense of priveledged bettors in the market
 will take competitors alignment (between [0,1]) to race preferences and randomely alter it
@@ -21,7 +21,7 @@ In play events and the stochastic events that will occur during its course will
 still be representative of how even having priveledged info doesn't garuantee
 betting success
 
-'''
+"""
 
 agents = {}
 exAnteOdds = {}
@@ -32,7 +32,8 @@ NUM_OF_PRIV_BETTORS = 0
 
 
 def observeRace(timestep):
-    with open(RACE_DATA_FILENAME, 'r') as file:
+    filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/race_event_core.csv"
+    with open(filename, "r") as file:  # RACE_DATA_FILENAME
         reader = csv.reader(file)
         r = [row for index, row in enumerate(reader) if index == timestep]
     time = r[0][0]
@@ -51,7 +52,9 @@ def createAdaptedCompPools(compPool, numOfPriveledgedBettors):
     for i in range(numOfPriveledgedBettors):
         pool = deepcopy(adaptedViewOfCompPool)
         for c in pool:
-            c.alignment = abs(c.alignment + (random.uniform(-disturbances[i], disturbances[i])))
+            c.alignment = abs(
+                c.alignment + (random.uniform(-disturbances[i], disturbances[i]))
+            )
 
         adaptedCompPools[i] = pool
 
@@ -79,9 +82,10 @@ def createOdds(ix, compPool, numOfSimulations, timestep=None, raceState=None):
         if oddsOfWinning[i] == 0:
             oddsOfWinning[i] = MAX_ODDS
         else:
-            p = (oddsOfWinning[i] / numOfSimulations)
+            p = oddsOfWinning[i] / numOfSimulations
             oddsOfWinning[i] = 1 / p
-            if oddsOfWinning[i] > MAX_ODDS: oddsOfWinning[i] = MAX_ODDS
+            if oddsOfWinning[i] > MAX_ODDS:
+                oddsOfWinning[i] = MAX_ODDS
     # print("ODDS")
     # print(oddsOfWinning)
     # oddsOfWinning[:] = [(100 / (o / numOfSimulations)) for o in oddsOfWinning]
@@ -101,7 +105,7 @@ def createExAnteOdds(compPool, attributes):
     numOfPriveledgedBettors = 0
     for agent in config.agents:
         type = agent[0]
-        if type == 'Priveledged' or type == 'Agent_Opinionated_Priviledged':
+        if type == "Priveledged" or type == "Agent_Opinionated_Priviledged":
             numOfPriveledgedBettors = agent[1]
             break
     NUM_OF_PRIV_BETTORS = numOfPriveledgedBettors
@@ -114,7 +118,7 @@ def createInPlayOdds(numberOfTimesteps):
     numOfPriveledgedBettors = 0
     for agent in config.agents:
         type = agent[0]
-        if type == 'Priveledged' or type == 'Agent_Opinionated_Priviledged':
+        if type == "Priveledged" or type == "Agent_Opinionated_Priviledged":
             numOfPriveledgedBettors = agent[1]
             break
 
@@ -132,6 +136,7 @@ def createInPlayOdds(numberOfTimesteps):
 
 
 # Getter functions for betting agents
+
 
 def getExAnteOdds(agentId):
     global agents

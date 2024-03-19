@@ -1,7 +1,8 @@
 import sys, math, threading, time, queue, random, csv, config, random, operator
 from message_protocols import Order
 from system_constants import *
-import pandas as pd 
+import pandas as pd
+
 # from ex_ante_odds_generator import *
 
 # getExAnteOdds, getInPlayOdds
@@ -14,11 +15,11 @@ def recordPrices(timestep, exchanges, record):
             ob = orderbook.backs.bestOdds
             ol = orderbook.lays.bestOdds
 
-            if(ob == None and ol == None):
+            if ob == None and ol == None:
                 compData[orderbook.competitorId] = MAX_ODDS
-            elif(ob == None):
+            elif ob == None:
                 compData[orderbook.competitorId] = ol
-            elif(ol == None):
+            elif ol == None:
                 compData[orderbook.competitorId] = ob
             else:
                 print(ob)
@@ -30,10 +31,11 @@ def recordPrices(timestep, exchanges, record):
                 qtyL = orderbook.lays.market[ol][0]
 
                 microprice = ((ob * qtyL) + (ol * qtyB)) / (qtyB + qtyL)
-                #if ob == None: ob = MAX_ODDS
+                # if ob == None: ob = MAX_ODDS
                 compData[orderbook.competitorId] = microprice
 
         record[timestep] = compData
+
 
 def recordSpread(timestep, exchanges, record):
     for id, ex in exchanges.items():
@@ -42,27 +44,30 @@ def recordSpread(timestep, exchanges, record):
             ob = orderbook.backs.bestOdds
             ol = orderbook.lays.bestOdds
 
-
             # if(ob == None and ol == None):
             #     compData[orderbook.competitorId] = None
             # elif(ob == None):
             #     compData[orderbook.competitorId] = None
             # elif(ol == None):
             #     compData[orderbook.competitorId] = None
-            if(ob != None and ol != None):
-                spread = abs((1/ob) - (1/ol))
-                #if ob == None: ob = MAX_ODDS
+            if ob != None and ol != None:
+                spread = abs((1 / ob) - (1 / ol))
+                # if ob == None: ob = MAX_ODDS
                 if spread != 0:
                     compData[orderbook.competitorId] = spread
 
         record[timestep] = compData
+
 
 def price_histories(priceHistory, simId):
     history = []
     for id, items in priceHistory.items():
         history.append(items)
 
-    rows = [ [k] + [ (MAX_ODDS if (z == None) else z) for c, z in v.items() ] for k, v in priceHistory.items() ]
+    rows = [
+        [k] + [(MAX_ODDS if (z == None) else z) for c, z in v.items()]
+        for k, v in priceHistory.items()
+    ]
 
     header = ["Time"]
     for c in range(NUM_OF_COMPETITORS):
@@ -71,17 +76,20 @@ def price_histories(priceHistory, simId):
     # print(priceHistory)
     print(rows)
 
-
-
-    fileName = "price_histories_" + str(simId) + ".csv"
-    with open(fileName, 'w', newline = '') as file:
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    fileName = path + "price_histories_" + str(simId) + ".csv"
+    with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(header)
         writer.writerows(rows)
 
+
 def price_spread(spreadHistory, simId):
 
-    rows = [ [k] + [ (MAX_ODDS if (z == None) else z) for c, z in v.items() ] for k, v in spreadHistory.items() ]
+    rows = [
+        [k] + [(MAX_ODDS if (z == None) else z) for c, z in v.items()]
+        for k, v in spreadHistory.items()
+    ]
 
     header = ["Time"]
     for c in range(NUM_OF_COMPETITORS):
@@ -90,8 +98,9 @@ def price_spread(spreadHistory, simId):
     # print(priceHistory)
     print(rows)
 
-    fileName = "price_spreads_" + str(simId) + ".csv"
-    with open(fileName, 'w', newline = '') as file:
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    fileName = path + "price_spreads_" + str(simId) + ".csv"
+    with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(header)
         writer.writerows(rows)
@@ -100,7 +109,8 @@ def price_spread(spreadHistory, simId):
 def priv_bettor_odds(bettingAgents):
     privBettors = []
     for id, agent in bettingAgents.items():
-        if agent.name == 'Priveledged' or agent.name=='Agent_Opinionated_Priviledged': privBettors.append(agent)
+        if agent.name == "Priveledged" or agent.name == "Agent_Opinionated_Priviledged":
+            privBettors.append(agent)
 
     oddsdata = {}
     for b in privBettors:
@@ -111,8 +121,9 @@ def priv_bettor_odds(bettingAgents):
         header.append(str(c))
 
     for b in privBettors:
-        fileName = "comp_odds_by_" + str(b.id) + ".csv"
-        with open(fileName, 'w', newline = '') as file:
+        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+        fileName = path + "comp_odds_by_" + str(b.id) + ".csv"
+        with open(fileName, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerows(b.oddsData)
@@ -130,23 +141,36 @@ def final_balances(bettingAgents, simId):
     data = []
     for i in range(len(bettors)):
         data.append(bettors[i].balance)
-    
-    fileName = "200_new_final_balance_" + str(simId) + ".csv"
-    with open(fileName, 'w', newline = '') as file:
+
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    fileName = (
+        path + "new_final_balance_" + str(simId) + ".csv"
+    )  # for 1000 simulations was 200 before
+    with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(header)
         writer.writerow(data)
 
     # for b in bettors:
-    #     fileName = "final_balance_" + str(simId) + "_" + str(b.id) + ".csv"
+    #     path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/Data/"
+    #     fileName = path + "final_balance_" + str(simId) + "_" + str(b.id) + ".csv"
     #     with open(fileName, 'w', newline = '') as file:
     #         writer = csv.writer(file)
     #         writer.writerow(header)
-    #         writer.writerow(data)
+    #         writer.writerow(data) #optimiser.py uses these files
 
 
 def transactions(trades, simId):
-    header = ["type", "time", "exchange", "competitor", "odds", "backer", "layer", "stake"]
+    header = [
+        "type",
+        "time",
+        "exchange",
+        "competitor",
+        "odds",
+        "backer",
+        "layer",
+        "stake",
+    ]
     tape = []
     for val in trades:
         temp = []
@@ -154,12 +178,13 @@ def transactions(trades, simId):
             temp.append(v)
         tape.append(temp)
 
-
-    fileName = "transactions_" + str(simId) + ".csv"
-    with open(fileName, 'w', newline = '') as file:
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    fileName = path + "transactions_" + str(simId) + ".csv"
+    with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(header)
         writer.writerows(tape)
+
 
 ##########
 
@@ -189,10 +214,10 @@ def transactions(trades, simId):
 #         epsilon = 1e-1
 #         mask = (agentDistances['competitor'] == competitor) & (abs(agentDistances['time'] - time) < epsilon)
 #         filtered_df = agentDistances[mask]
-#         distance = filtered_df['distance'].values[0] if len(filtered_df) > 0 else 0 
-#         rank = filtered_df['rank'].values[0] if len(filtered_df) > 0 else 0 
+#         distance = filtered_df['distance'].values[0] if len(filtered_df) > 0 else 0
+#         rank = filtered_df['rank'].values[0] if len(filtered_df) > 0 else 0
 
-#         # For backer   
+#         # For backer
 #         backer_balance = balances[val["backer"]]
 #         backer_row = [val["type"], val["time"], val["exchange"], val["competitor"], val["odds"], val["backer"], "backer", val["stake"], backer_balance, distance, rank]
 #         tape.append(backer_row)
@@ -207,6 +232,7 @@ def transactions(trades, simId):
 #         writer.writerow(new_header)
 #         writer.writerows(tape)
 
+
 def getBalance(bettingAgents):
     """
     Retrieve the balance for each betting agent.
@@ -218,6 +244,7 @@ def getBalance(bettingAgents):
         balances[i] = bettor.balance
 
     return balances
+
 
 def getXGboostTrainData(trades, simId, bettingAgents, agentDistances):
     """
@@ -231,53 +258,98 @@ def getXGboostTrainData(trades, simId, bettingAgents, agentDistances):
     balances = getBalance(bettingAgents)
 
     # Compute the ranks for each competitor and time
-    agentDistances['rank'] = agentDistances.groupby('time')['distance'].rank(ascending=False, method='first').astype(int)
+    agentDistances["rank"] = (
+        agentDistances.groupby("time")["distance"]
+        .rank(ascending=False, method="first")
+        .astype(int)
+    )
 
     # Adjust the order of columns
-    new_header = ["type","competitorID", "time", "exchange", "odds",  "agentID", "stake", "distance", "rank", "balance", "decision"]
+    new_header = [
+        "type",
+        "competitorID",
+        "time",
+        "exchange",
+        "odds",
+        "agentID",
+        "stake",
+        "distance",
+        "rank",
+        "balance",
+        "decision",
+    ]
 
-    tape = [] # This will hold our final data rows
+    tape = []  # This will hold our final data rows
     for val in trades:
         competitor = val["competitor"]
         time = val["time"]
 
         # Define a tolerance level to match times approximately
         tolerance = 1e-1
-        
+
         # Filter the distances dataframe for matching competitor and times
-        mask = (agentDistances['competitor'] == competitor) & (abs(agentDistances['time'] - time) < tolerance)
+        mask = (agentDistances["competitor"] == competitor) & (
+            abs(agentDistances["time"] - time) < tolerance
+        )
         filtered_df = agentDistances[mask]
-        distance = filtered_df['distance'].values[0] if len(filtered_df) > 0 else 0 
-        rank = filtered_df['rank'].values[0] if len(filtered_df) > 0 else 0 
+        distance = filtered_df["distance"].values[0] if len(filtered_df) > 0 else 0
+        rank = filtered_df["rank"].values[0] if len(filtered_df) > 0 else 0
 
         # Extract and format data for backer
         backer_balance = balances[val["backer"]]
-        backer_row = [val["type"], val["competitor"], val["time"], val["exchange"], val["odds"], val["backer"], val["stake"], distance, rank, backer_balance, "backer"]
+        backer_row = [
+            val["type"],
+            val["competitor"],
+            val["time"],
+            val["exchange"],
+            val["odds"],
+            val["backer"],
+            val["stake"],
+            distance,
+            rank,
+            backer_balance,
+            "backer",
+        ]
         tape.append(backer_row)
 
         # Extract and format data for layer
         layer_balance = balances[val["layer"]]
-        layer_row = [val["type"], val["competitor"], val["time"], val["exchange"], val["odds"],  val["layer"], val["stake"], distance, rank, layer_balance, "layer"]
+        layer_row = [
+            val["type"],
+            val["competitor"],
+            val["time"],
+            val["exchange"],
+            val["odds"],
+            val["layer"],
+            val["stake"],
+            distance,
+            rank,
+            layer_balance,
+            "layer",
+        ]
         tape.append(layer_row)
 
     # Write the final data rows to a CSV file
-    fileName = "getXGBOOstTrainingData_" + str(simId) + ".csv"
-    with open(fileName, 'w', newline='') as file:
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    fileName = path + "getXGBoost2TrainingData_" + str(simId) + ".csv"
+    with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(new_header)
         writer.writerows(tape)
 
 
-def createstats(bettingAgents, simId, trades, priceHistory, spreadHistory,AgentDistance):
-    #priv_bettor_odds(bettingAgents)
+def createstats(
+    bettingAgents, simId, trades, priceHistory, spreadHistory, AgentDistance
+):
+    priv_bettor_odds(bettingAgents)  # commented out before
     final_balances(bettingAgents, simId)
-    #price_histories(priceHistory, simId)
-    #price_spread(spreadHistory, simId)
+    price_histories(priceHistory, simId)  # commentedout before
+    price_spread(spreadHistory, simId)  # commented out before
     transactions(trades, simId)
-    #getTrainingData(trades, simId,bettingAgents)
-    getXGboostTrainData(trades, simId,bettingAgents,pd.DataFrame.from_dict(AgentDistance))
-
-
+    # getTrainingData(trades, simId,bettingAgents)
+    getXGboostTrainData(
+        trades, simId, bettingAgents, pd.DataFrame.from_dict(AgentDistance)
+    )
 
 
 # def getTrainingData2(trades, simId, bettingAgents,agentDistances):
@@ -301,9 +373,9 @@ def createstats(bettingAgents, simId, trades, priceHistory, spreadHistory,AgentD
 
 #         print(abs(agentDistances['time'] - time))
 #         distance = agentDistances[mask]['distance'].values
-#         distance = distance[0] if len(distance) > 0 else 0 
+#         distance = distance[0] if len(distance) > 0 else 0
 
-#         # For backer   
+#         # For backer
 #         backer_balance = balances[val["backer"]]
 #         backer_row = [val["type"], val["time"], val["exchange"], val["competitor"], val["odds"], val["backer"], "backer", val["stake"], backer_balance,distance]
 #         tape.append(backer_row)
@@ -331,9 +403,8 @@ def createstats(bettingAgents, simId, trades, priceHistory, spreadHistory,AgentD
 #         layer_row = [val["type"], val["time"], val["exchange"], val["competitor"], val["odds"], val["layer"], "layer", val["stake"], layer_balance]
 #         tape.append(layer_row)
 
-    # fileName = "getTrainingData" + str(simId) + ".csv"
-    # with open(fileName, 'w', newline='') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(new_header)
-    #     writer.writerows(tape)
-
+# fileName = "getTrainingData" + str(simId) + ".csv"
+# with open(fileName, 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(new_header)
+#     writer.writerows(tape)

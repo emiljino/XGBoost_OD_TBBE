@@ -43,13 +43,13 @@ class Session:
         self.tape = []
         self.priceRecord = {}
         self.spreads = {}
-        self.opinion_hist = {'id': [], 'time': [], 'opinion': [], 'competitor': []}
-        self.opinion_hist_l = {'id': [], 'time': [], 'opinion': [], 'competitor': []}
-        self.opinion_hist_e = {'id': [], 'time': [], 'opinion': [], 'competitor': []}
-        self.opinion_hist_g = {'id': [], 'time': [], 'opinion': [], 'competitor': []}
-        self.opinion_hist_s = {'id': [], 'time': [], 'opinion': [], 'competitor': []}
-        self.competitor_odds = {'time': [], 'odds': [], 'competitor': []}
-        self.competitor_distances = {'time': [], 'distance': [], 'competitor': []}
+        self.opinion_hist = {"id": [], "time": [], "opinion": [], "competitor": []}
+        self.opinion_hist_l = {"id": [], "time": [], "opinion": [], "competitor": []}
+        self.opinion_hist_e = {"id": [], "time": [], "opinion": [], "competitor": []}
+        self.opinion_hist_g = {"id": [], "time": [], "opinion": [], "competitor": []}
+        self.opinion_hist_s = {"id": [], "time": [], "opinion": [], "competitor": []}
+        self.competitor_odds = {"time": [], "odds": [], "competitor": []}
+        self.competitor_distances = {"time": [], "distance": [], "competitor": []}
 
         self.generateRaceData()
         self.initialiseThreads()
@@ -58,16 +58,18 @@ class Session:
         """
         Logic for thread running the exchange
         """
-        #print("EXCHANGE " + str(exchange.id) + " INITIALISED...")
+        # print("EXCHANGE " + str(exchange.id) + " INITIALISED...")
         self.event.wait()
         # While event is running, run logic for exchange
 
-        competitor_odds = {'time': [], 'odds': [], 'competitor': []}
+        competitor_odds = {"time": [], "odds": [], "competitor": []}
 
         while self.event.isSet():
             timeInEvent = (time.time() - self.startTime) / SESSION_SPEED_MULTIPLIER
-            try: order = exchangeOrderQ.get(block=False)
-            except: continue
+            try:
+                order = exchangeOrderQ.get(block=False)
+            except:
+                continue
 
             marketUpdates = {}
             for i in range(NUM_OF_EXCHANGES):
@@ -80,8 +82,6 @@ class Session:
             else:
                 self.OpinionDynamicsPlatform.settle_opinions(self.winningCompetitor)
 
-
-
             (transactions, markets) = exchange.processOrder(timeInEvent, order)
 
             if transactions != None:
@@ -89,12 +89,11 @@ class Session:
                     update = exchangeUpdate(transactions, order, markets)
                     q.put(update)
 
-
     def agentLogic(self, agent, agentQ):
         """
         Logic for betting agent threads
         """
-        #print("AGENT " + str(agent.id) + " INITIALISED...")
+        # print("AGENT " + str(agent.id) + " INITIALISED...")
         # Need to have pre-event betting period
         self.event.wait()
         # Whole event is running, run logic for betting agents
@@ -104,20 +103,23 @@ class Session:
             order = None
             trade = None
 
-
             while agentQ.empty() is False:
-                qItem = agentQ.get(block = False)
+                qItem = agentQ.get(block=False)
                 if qItem.protocolNum == EXCHANGE_UPDATE_MSG_NUM:
                     for transaction in qItem.transactions:
-                        if transaction['backer'] == agent.id: agent.bookkeep(transaction, 'Backer', qItem.order, timeInEvent)
-                        if transaction['layer'] == agent.id: agent.bookkeep(transaction, 'Layer', qItem.order, timeInEvent)
+                        if transaction["backer"] == agent.id:
+                            agent.bookkeep(
+                                transaction, "Backer", qItem.order, timeInEvent
+                            )
+                        if transaction["layer"] == agent.id:
+                            agent.bookkeep(
+                                transaction, "Layer", qItem.order, timeInEvent
+                            )
 
                 elif qItem.protocolNum == RACE_UPDATE_MSG_NUM:
                     agent.observeRaceState(qItem.timestep, qItem.compDistances)
                 else:
                     print("INVALID MESSAGE")
-
-
 
             marketUpdates = {}
             for i in range(NUM_OF_EXCHANGES):
@@ -126,48 +128,52 @@ class Session:
             agent.respond(timeInEvent, marketUpdates, trade)
             order = agent.getorder(timeInEvent, marketUpdates)
 
-
             if agent.id == 0:
                 for i in range(NUM_OF_COMPETITORS):
-                    self.competitor_odds['time'].append(timeInEvent)
-                    self.competitor_odds['competitor'].append(i)
-                    if marketUpdates[0][i]['backs']['n'] > 0:
-                        self.competitor_odds['odds'].append(marketUpdates[0][i]['backs']['best'])
+                    self.competitor_odds["time"].append(timeInEvent)
+                    self.competitor_odds["competitor"].append(i)
+                    if marketUpdates[0][i]["backs"]["n"] > 0:
+                        self.competitor_odds["odds"].append(
+                            marketUpdates[0][i]["backs"]["best"]
+                        )
                     else:
-                        self.competitor_odds['odds'].append(marketUpdates[0][i]['backs']['worst'])
+                        self.competitor_odds["odds"].append(
+                            marketUpdates[0][i]["backs"]["worst"]
+                        )
 
-                    self.competitor_distances['competitor'].append(i)
-                    self.competitor_distances['time'].append(timeInEvent)
+                    self.competitor_distances["competitor"].append(i)
+                    self.competitor_distances["time"].append(timeInEvent)
                     if len(agent.currentRaceState) == 0:
-                        self.competitor_distances['distance'].append(0)
+                        self.competitor_distances["distance"].append(0)
                     else:
-                        self.competitor_distances['distance'].append(agent.currentRaceState[i])
+                        self.competitor_distances["distance"].append(
+                            agent.currentRaceState[i]
+                        )
 
+            self.opinion_hist["id"].append(agent.id)
+            self.opinion_hist["time"].append(timeInEvent)
+            self.opinion_hist["opinion"].append(agent.opinion)
+            self.opinion_hist["competitor"].append(OPINION_COMPETITOR)
 
-            self.opinion_hist['id'].append(agent.id)
-            self.opinion_hist['time'].append(timeInEvent)
-            self.opinion_hist['opinion'].append(agent.opinion)
-            self.opinion_hist['competitor'].append(OPINION_COMPETITOR)
+            self.opinion_hist_e["id"].append(agent.id)
+            self.opinion_hist_e["time"].append(timeInEvent)
+            self.opinion_hist_e["opinion"].append(agent.event_opinion)
+            self.opinion_hist_e["competitor"].append(OPINION_COMPETITOR)
 
-            self.opinion_hist_e['id'].append(agent.id)
-            self.opinion_hist_e['time'].append(timeInEvent)
-            self.opinion_hist_e['opinion'].append(agent.event_opinion)
-            self.opinion_hist_e['competitor'].append(OPINION_COMPETITOR)
+            self.opinion_hist_l["id"].append(agent.id)
+            self.opinion_hist_l["time"].append(timeInEvent)
+            self.opinion_hist_l["opinion"].append(agent.local_opinion)
+            self.opinion_hist_l["competitor"].append(OPINION_COMPETITOR)
 
-            self.opinion_hist_l['id'].append(agent.id)
-            self.opinion_hist_l['time'].append(timeInEvent)
-            self.opinion_hist_l['opinion'].append(agent.local_opinion)
-            self.opinion_hist_l['competitor'].append(OPINION_COMPETITOR)
+            self.opinion_hist_g["id"].append(agent.id)
+            self.opinion_hist_g["time"].append(timeInEvent)
+            self.opinion_hist_g["opinion"].append(agent.global_opinion)
+            self.opinion_hist_g["competitor"].append(OPINION_COMPETITOR)
 
-            self.opinion_hist_g['id'].append(agent.id)
-            self.opinion_hist_g['time'].append(timeInEvent)
-            self.opinion_hist_g['opinion'].append(agent.global_opinion)
-            self.opinion_hist_g['competitor'].append(OPINION_COMPETITOR)
-
-            self.opinion_hist_s['id'].append(agent.id)
-            self.opinion_hist_s['time'].append(timeInEvent)
-            self.opinion_hist_s['opinion'].append(agent.strategy_opinion)
-            self.opinion_hist_s['competitor'].append(OPINION_COMPETITOR)
+            self.opinion_hist_s["id"].append(agent.id)
+            self.opinion_hist_s["time"].append(timeInEvent)
+            self.opinion_hist_s["opinion"].append(agent.strategy_opinion)
+            self.opinion_hist_s["competitor"].append(OPINION_COMPETITOR)
 
             if order != None:
 
@@ -176,19 +182,19 @@ class Session:
                 agent.numOfBets = agent.numOfBets + 1
                 self.exchangeOrderQs[order.exchange].put(order)
 
-
-       # print("ENDING AGENT " + str(agent.id))
+        # print("ENDING AGENT " + str(agent.id))
         return 0
 
     def populateMarket(self):
         """
         Populate market with betting agents as specified in config file
         """
+
         def initAgent(name, quantity, id):
 
             uncertainty = 1.0
 
-            local_opinion = 1/ NUM_OF_COMPETITORS
+            local_opinion = 1 / NUM_OF_COMPETITORS
 
             #
             # if name == 'Test': return Agent_Test(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod)
@@ -201,15 +207,91 @@ class Session:
             # if name == 'Arbitrage2': return Agent_Arbitrage2(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod)
             # if name == 'Priveledged': return Agent_Priveledged(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod)
 
-            if name == 'Agent_Opinionated_Random': return Agent_Opinionated_Random(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion, uncertainty, MIN_OP, MAX_OP )
-            if name == 'Agent_Opinionated_Leader_Wins': return Agent_Opinionated_Leader_Wins(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion, uncertainty, MIN_OP, MAX_OP )
-            if name == 'Agent_Opinionated_Underdog': return Agent_Opinionated_Underdog(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion, uncertainty, MIN_OP, MAX_OP)
-            if name == "Agent_Opinionated_Back_Favourite": return Agent_Opinionated_Back_Favourite(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion, uncertainty, MIN_OP, MAX_OP)
-            if name == 'Agent_Opinionated_Linex': return Agent_Opinionated_Linex(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion,uncertainty, MIN_OP, MAX_OP)
+            if name == "Agent_Opinionated_Random":
+                return Agent_Opinionated_Random(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
+            if name == "Agent_Opinionated_Leader_Wins":
+                return Agent_Opinionated_Leader_Wins(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
+            if name == "Agent_Opinionated_Underdog":
+                return Agent_Opinionated_Underdog(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
+            if name == "Agent_Opinionated_Back_Favourite":
+                return Agent_Opinionated_Back_Favourite(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
+            if name == "Agent_Opinionated_Linex":
+                return Agent_Opinionated_Linex(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
 
-            if name == 'Agent_Opinionated_Priviledged': return Agent_Opinionated_Priviledged(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 1, local_opinion, uncertainty, MIN_OP, MAX_OP)
-            if name == 'XGBoostBettingAgent': return XGBoostBettingAgent(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod, 0, local_opinion,uncertainty, MIN_OP, MAX_OP)
-
+            if name == "Agent_Opinionated_Priviledged":
+                return Agent_Opinionated_Priviledged(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    1,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
+            if name == "XGBoost1BettingAgent":
+                return XGBoost1BettingAgent(
+                    id,
+                    name,
+                    self.lengthOfRace,
+                    self.endOfInPlayBettingPeriod,
+                    0,
+                    local_opinion,
+                    uncertainty,
+                    MIN_OP,
+                    MAX_OP,
+                )
 
         id = 0
         for agent in config.agents:
@@ -223,7 +305,9 @@ class Session:
         Initialise exchanges, returns list of exchange objects
         """
         for i in range(NUM_OF_EXCHANGES):
-            self.exchanges[i] = Exchange(i, NUM_OF_COMPETITORS) # NUM_OF_COMPETITORS may be changed to list of competitor objects that are participating
+            self.exchanges[i] = Exchange(
+                i, NUM_OF_COMPETITORS
+            )  # NUM_OF_COMPETITORS may be changed to list of competitor objects that are participating
             self.exchangeOrderQs[i] = queue.Queue()
 
     def initialiseBettingAgents(self):
@@ -231,28 +315,32 @@ class Session:
         Initialise betting agents
         """
         self.populateMarket()
-        self.OpinionDynamicsPlatform = OpinionDynamicsPlatform(list(self.bettingAgents.values()), MODEL_NAME)
+        self.OpinionDynamicsPlatform = OpinionDynamicsPlatform(
+            list(self.bettingAgents.values()), MODEL_NAME
+        )
         print("initializating")
-        #print(list(self.bettingAgents.values()))
+        # print(list(self.bettingAgents.values()))
         # Create threads for all betting agents that wait until event session
         # has started
         for id, agent in self.bettingAgents.items():
             self.bettingAgentQs[id] = queue.Queue()
-            thread = threading.Thread(target = self.agentLogic, args = [agent, self.bettingAgentQs[id]])
+            thread = threading.Thread(
+                target=self.agentLogic, args=[agent, self.bettingAgentQs[id]]
+            )
             self.bettingAgentThreads.append(thread)
-
 
     def updateRaceQ(self, timestep):
         """
         Read in race data and update agent queues with competitor distances at timestep
         """
-        with open(RACE_DATA_FILENAME, 'r') as file:
+        filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/race_event_core.csv"
+        with open(filename, "r") as file:  # RACE_DATA_FILENAME
             reader = csv.reader(file)
             r = [row for index, row in enumerate(reader) if index == timestep]
         time = r[0][0]
         compDistances = {}
         for c in range(NUM_OF_COMPETITORS):
-            compDistances[c] = float(r[0][c+1])
+            compDistances[c] = float(r[0][c + 1])
 
         # Create update
         update = raceUpdate(time, compDistances)
@@ -261,7 +349,10 @@ class Session:
             q.put(update)
 
     def preRaceBetPeriod(self):
-        print("Start of pre-race betting period, lasting " + str(PRE_RACE_BETTING_PERIOD_LENGTH))
+        print(
+            "Start of pre-race betting period, lasting "
+            + str(PRE_RACE_BETTING_PERIOD_LENGTH)
+        )
         time.sleep(PRE_RACE_BETTING_PERIOD_LENGTH / SESSION_SPEED_MULTIPLIER)
         print("End of pre-race betting period")
         # marketUpdates = {}
@@ -269,7 +360,6 @@ class Session:
         #     timeInEvent = time.time() - startTime
         #     print("Exchange " + str(id) + " markets: ")
         #     print(exchanges[id].publishMarketState(timeInEvent))
-
 
     def eventSession(self, simulationId):
         """
@@ -281,7 +371,9 @@ class Session:
 
         # Start exchange threads
         for id, exchange in self.exchanges.items():
-            thread = threading.Thread(target = self.exchangeLogic, args = [exchange, self.exchangeOrderQs[id]])
+            thread = threading.Thread(
+                target=self.exchangeLogic, args=[exchange, self.exchangeOrderQs[id]]
+            )
             self.exchangeThreads.append(thread)
 
         for thread in self.exchangeThreads:
@@ -299,26 +391,24 @@ class Session:
         # Pre-race betting period
         self.preRaceBetPeriod()
 
-
         # have loop which runs until competitor has won race
         i = 0
-        while(i < self.numberOfTimesteps):
-            self.updateRaceQ(i+1)
-            i = i+1
-            if TBBE_VERBOSE: print(i)
+        while i < self.numberOfTimesteps:
+            self.updateRaceQ(i + 1)
+            i = i + 1
+            if TBBE_VERBOSE:
+                print(i)
             print(i)
             time.sleep(1 / SESSION_SPEED_MULTIPLIER)
-
-
-
-
 
         # End event
         self.event.clear()
 
         # Close threads
-        for thread in self.exchangeThreads: thread.join()
-        for thread in self.bettingAgentThreads: thread.join()
+        for thread in self.exchangeThreads:
+            thread.join()
+        for thread in self.bettingAgentThreads:
+            thread.join()
 
         print("Simulation complete")
 
@@ -326,7 +416,7 @@ class Session:
         for id, ex in self.exchanges.items():
             for orderbook in ex.compOrderbooks:
                 for trade in orderbook.tape:
-                    #print(trade)
+                    # print(trade)
                     self.tape.append(trade)
 
         # Settle up all transactions over all exchanges
@@ -337,9 +427,23 @@ class Session:
         #     exchange.tapeDump('transactions.csv', 'a', 'keep')
 
         for id, agent in self.bettingAgents.items():
-            print("Agent " + str(id) + "\'s final balance: " + str(agent.balance)+ " : "+str(agent.name))
+            print(
+                "Agent "
+                + str(id)
+                + "'s final balance: "
+                + str(agent.balance)
+                + " : "
+                + str(agent.name)
+            )
 
-        createstats(self.bettingAgents, simulationId, self.tape, self.priceRecord, self.spreads, self.competitor_distances)
+        createstats(
+            self.bettingAgents,
+            simulationId,
+            self.tape,
+            self.priceRecord,
+            self.spreads,
+            self.competitor_distances,
+        )
 
     def initialiseThreads(self):
         self.initialiseExchanges()
@@ -352,7 +456,6 @@ class Session:
         compPool = deepcopy(race.competitors)
         raceAttributes = deepcopy(race.race_attributes)
 
-
         # create simulations for procurement of ex-ante odds for priveledged betters
         createExAnteOdds(compPool, raceAttributes)
 
@@ -364,19 +467,13 @@ class Session:
         self.distances = race.raceData
         self.endOfInPlayBettingPeriod = race.winningTimestep - IN_PLAY_CUT_OFF_PERIOD
 
-
         createInPlayOdds(self.numberOfTimesteps)
-
-
-
-
 
 
 class BBE(Session):
     def __init__(self):
         self.session = None
         return
-
 
     # MAIN LOOP
     # argFuncf is an optional function which sets up a new session (takes in a session)
@@ -400,28 +497,31 @@ class BBE(Session):
             currentSimulation = currentSimulation + 1
 
         # Opinion Dynamics results:
+        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
 
         opinion_hist_df = pandas.DataFrame.from_dict(self.session.opinion_hist)
-        opinion_hist_df.to_csv('opinions.csv', index=False)
+        opinion_hist_df.to_csv(path + "opinions.csv", index=False)
 
         opinion_hist_df_l = pandas.DataFrame.from_dict(self.session.opinion_hist_l)
-        opinion_hist_df_l.to_csv('opinions_l.csv', index=False)
+        opinion_hist_df_l.to_csv(path + "opinions_l.csv", index=False)
 
         opinion_hist_df_g = pandas.DataFrame.from_dict(self.session.opinion_hist_g)
-        opinion_hist_df_g.to_csv('opinions_g.csv', index=False)
+        opinion_hist_df_g.to_csv(path + "opinions_g.csv", index=False)
 
         opinion_hist_df_e = pandas.DataFrame.from_dict(self.session.opinion_hist_e)
-        opinion_hist_df_e.to_csv('opinions_e.csv', index=False)
+        opinion_hist_df_e.to_csv(path + "opinions_e.csv", index=False)
 
         competitor_odds_df = pandas.DataFrame.from_dict(self.session.competitor_odds)
-        competitor_odds_df.to_csv('competitor_odds.csv', index=False)
+        competitor_odds_df.to_csv(path + "competitor_odds.csv", index=False)
 
-        competitor_distances_df = pandas.DataFrame.from_dict(self.session.competitor_distances)
-        competitor_distances_df.to_csv('competitor_distances.csv', index=False)
-        #print(competitor_distances_df)
+        competitor_distances_df = pandas.DataFrame.from_dict(
+            self.session.competitor_distances
+        )
+        competitor_distances_df.to_csv(path + "competitor_distances.csv", index=False)
+        # print(competitor_distances_df)
 
         opinion_hist_s_df = pandas.DataFrame.from_dict(self.session.opinion_hist_s)
-        opinion_hist_s_df.to_csv('opinion_hist_s.csv', index=False)
+        opinion_hist_s_df.to_csv(path + "opinion_hist_s.csv", index=False)
 
 
 if __name__ == "__main__":
@@ -430,10 +530,9 @@ if __name__ == "__main__":
     start = time.time()
     # random.seed(26)
     # np.random.seed(26)
-    print('Running')
+    print("Running")
     bbe = BBE()
-    print('Running')
+    print("Running")
     bbe.runSession()
     end = time.time()
-    print('Time taken: ', end - start)
-
+    print("Time taken: ", end - start)
