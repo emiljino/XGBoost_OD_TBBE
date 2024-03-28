@@ -2,7 +2,7 @@ import random, math, statistics
 import numpy as np
 from system_constants import *
 
-'''
+"""
 
 1) Uncertainty on race speed should be different for each competitor as some horses are more reliable than others
 2) Alignment methods - cartesian vs mean vs other
@@ -18,7 +18,7 @@ from system_constants import *
 
 
 
-'''
+"""
 
 
 # Competitor Attributes
@@ -38,23 +38,29 @@ class CompetitorPreferences:
 
     def createPreferenceDict(self):
         preference_dict = {
-            "length": (self.length - MIN_RACE_LENGTH) / (MAX_RACE_LENGTH - MIN_RACE_LENGTH),
-            "undulation": (self.undulation - MIN_RACE_UNDULATION) / (MAX_RACE_UNDULATION - MIN_RACE_UNDULATION),
-            "temperature": (self.temperature - MIN_RACE_TEMPERATURE) / (MAX_RACE_TEMPERATUE - MIN_RACE_TEMPERATURE)
+            "length": (self.length - MIN_RACE_LENGTH)
+            / (MAX_RACE_LENGTH - MIN_RACE_LENGTH),
+            "undulation": (self.undulation - MIN_RACE_UNDULATION)
+            / (MAX_RACE_UNDULATION - MIN_RACE_UNDULATION),
+            "temperature": (self.temperature - MIN_RACE_TEMPERATURE)
+            / (MAX_RACE_TEMPERATUE - MIN_RACE_TEMPERATURE),
         }
 
         return preference_dict
 
+
 # Competitor class
 
+
 class Competitor:
-    """ Competitor object """
+    """Competitor object"""
+
     def __init__(self, id, race_attributes):
         self.id = id
         self.distance = 0
 
         # competitor attributes
-        #self.class = ""
+        # self.class = ""
         self.responsiveness = 0
         self.energy = race_attributes.length
         self.speed = 0
@@ -65,20 +71,22 @@ class Competitor:
         self.race_attributes = race_attributes
 
         self.alignment = self.calculateAlignment()
-        #self.alignment = 1
+        # self.alignment = 1
         consistencyStDev = random.gauss(0.1, 0.01)
         self.consistency = random.gauss(1, consistencyStDev)
-
-
 
     def initVariables(self):
         speedLower = random.randint(9, 12)
         speedHigher = random.randint(13, 16)
         self.speed = (speedLower, speedHigher)
-        self.running_style = random.choice(["frontrunner", "stalker", "closer", "all_rounder"])
-        if self.running_style == "all_rounder": self.responsiveness = 0.85
-        else: self.responsiveness = 0.8
-        #self.responsiveness = 1
+        self.running_style = random.choice(
+            ["frontrunner", "stalker", "closer", "all_rounder"]
+        )
+        if self.running_style == "all_rounder":
+            self.responsiveness = 0.85
+        else:
+            self.responsiveness = 0.8
+        # self.responsiveness = 1
 
     def calculateAlignment(self):
         # CARTESIAN DIFFERENCE
@@ -93,17 +101,9 @@ class Competitor:
         align = []
         for key, value in self.race_attributes.race_attributes_dict.items():
             diff = abs(self.preferences.preference_dict.get(key) - value)
-            align.append(1-diff)
+            align.append(1 - diff)
 
         return statistics.mean(align)
-
-
-
-
-
-
-
-
 
 
 #

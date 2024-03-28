@@ -1077,7 +1077,7 @@ class Agent_Opinionated_Priviledged(BettingAgent):
 #################
 
 
-class XGBoost1BettingAgent(BettingAgent):
+class XGBoostBettingAgent(BettingAgent):
 
     def __init__(
         self,
@@ -1090,6 +1090,7 @@ class XGBoost1BettingAgent(BettingAgent):
         uncertainty,
         lower_op_bound,
         upper_op_bound,
+        model_type="xgb1",
     ):
         super().__init__(
             id,
@@ -1102,13 +1103,27 @@ class XGBoost1BettingAgent(BettingAgent):
             lower_op_bound,
             upper_op_bound,
         )
+        # self.xgb_loaded_model = xgb.Booster()
+        # self.xgb_loaded_model.load_model(
+        #     "Trained_XGB1_model.json"
+        # )  # the trained XGBoost model
+
+        self.model_type = model_type
         self.xgb_loaded_model = xgb.Booster()
-        self.xgb_loaded_model.load_model(
-            "Trained_XGB1_model.json"
-        )  # the trained XGBoost model
+
+        # specifying which model to load
+        if self.model_type == "xgb1":
+            model_file = "Trained_XGB1_model.json"
+        elif self.model_type == "xgb2":
+            model_file = "Trained_XGB2_model2.json"
+        else:
+            raise ValueError("Invalid model type")
+
+        self.xgb_loaded_model.load_model(model_file)
+
         self.bettingInterval = 2
         self.bettingTime = random.randint(5, 15)
-        self.name = "XGBoost1BettingAgent"
+        self.name = "XGBoostBettingAgent"
 
     def getorder(self, time, markets):
         order = None

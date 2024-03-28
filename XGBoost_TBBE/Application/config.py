@@ -22,15 +22,39 @@
 #           ('Agent_Opinionated_Priviledged', 2)
 #           ]
 
-agents = [  # settings before
+# agents = [  # settings before
+#     ("Agent_Opinionated_Random", 10),
+#     ("Agent_Opinionated_Leader_Wins", 10),
+#     ("Agent_Opinionated_Underdog", 10),
+#     ("Agent_Opinionated_Back_Favourite", 10),
+#     ("Agent_Opinionated_Linex", 10),
+#     ("Agent_Opinionated_Priviledged", 5),
+#     ("XGBoostBettingAgent", 5),
+# ]
+
+
+agents = [  # with both xgb models
     ("Agent_Opinionated_Random", 10),
     ("Agent_Opinionated_Leader_Wins", 10),
     ("Agent_Opinionated_Underdog", 10),
     ("Agent_Opinionated_Back_Favourite", 10),
     ("Agent_Opinionated_Linex", 10),
     ("Agent_Opinionated_Priviledged", 5),
-    ("XGBoost1BettingAgent", 5),
+    ("XGBoostBettingAgent_xgb1", 5),
+    ("XGBoostBettingAgent_xgb2", 5),
 ]
+
+
+# agents = [  # 10 xgb1 for xgb2 training
+#     ("Agent_Opinionated_Random", 10),
+#     ("Agent_Opinionated_Leader_Wins", 10),
+#     ("Agent_Opinionated_Underdog", 10),
+#     ("Agent_Opinionated_Back_Favourite", 10),
+#     ("Agent_Opinionated_Linex", 10),
+#     ("Agent_Opinionated_Priviledged", 5),
+#     ("XGBoostBettingAgent_xgb1", 10),
+# ]
+
 
 # agents = [
 #           ('Agent_Opinionated_Random', 5),

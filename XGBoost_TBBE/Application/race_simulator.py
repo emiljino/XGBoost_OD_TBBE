@@ -363,7 +363,7 @@ class Simulator:
             header.append(str(c.id))
 
         # fileName = "data/race_event_" + str(name) + ".csv"
-        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
         fileName = path + "race_event_" + str(name) + ".csv"
         with open(fileName, "w", newline="") as file:
             writer = csv.writer(file)

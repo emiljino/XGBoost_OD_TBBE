@@ -32,7 +32,7 @@ NUM_OF_PRIV_BETTORS = 0
 
 
 def observeRace(timestep):
-    filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/race_event_core.csv"
+    filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/race_event_core.csv"
     with open(filename, "r") as file:  # RACE_DATA_FILENAME
         reader = csv.reader(file)
         r = [row for index, row in enumerate(reader) if index == timestep]

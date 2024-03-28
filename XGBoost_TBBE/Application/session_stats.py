@@ -76,7 +76,7 @@ def price_histories(priceHistory, simId):
     # print(priceHistory)
     print(rows)
 
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
     fileName = path + "price_histories_" + str(simId) + ".csv"
     with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
@@ -98,7 +98,7 @@ def price_spread(spreadHistory, simId):
     # print(priceHistory)
     print(rows)
 
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
     fileName = path + "price_spreads_" + str(simId) + ".csv"
     with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
@@ -121,7 +121,7 @@ def priv_bettor_odds(bettingAgents):
         header.append(str(c))
 
     for b in privBettors:
-        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
         fileName = path + "comp_odds_by_" + str(b.id) + ".csv"
         with open(fileName, "w", newline="") as file:
             writer = csv.writer(file)
@@ -142,7 +142,7 @@ def final_balances(bettingAgents, simId):
     for i in range(len(bettors)):
         data.append(bettors[i].balance)
 
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
     fileName = (
         path + "new_final_balance_" + str(simId) + ".csv"
     )  # for 1000 simulations was 200 before
@@ -178,7 +178,7 @@ def transactions(trades, simId):
             temp.append(v)
         tape.append(temp)
 
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
     fileName = path + "transactions_" + str(simId) + ".csv"
     with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)
@@ -330,7 +330,7 @@ def getXGboostTrainData(trades, simId, bettingAgents, agentDistances):
         tape.append(layer_row)
 
     # Write the final data rows to a CSV file
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
     fileName = path + "getXGBoost2TrainingData_" + str(simId) + ".csv"
     with open(fileName, "w", newline="") as file:
         writer = csv.writer(file)

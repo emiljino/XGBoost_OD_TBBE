@@ -8,10 +8,11 @@ from exchange import Exchange
 from message_protocols import *
 from session_stats import *
 
+
 def main():
     # Simulation attributes
     currentSimulation = 0
-    numOfSimulations =2
+    numOfSimulations = 2
     ####################
 
     # set things up
@@ -31,8 +32,6 @@ def main():
         worse.append(0)
         same.append(0)
 
-
-
     while currentSimulation < numOfSimulations:
         simulationId = "Simulation: " + str(currentSimulation)
 
@@ -47,7 +46,7 @@ def main():
 
         race.run(raceFilename)
         e = time.time()
-        avgtime = avgtime + (e-s)
+        avgtime = avgtime + (e - s)
 
         exAnteOdds = getExAnteOdds(38)
         # minOdds = min(exAnteOdds)
@@ -56,9 +55,14 @@ def main():
 
         exAnteOdds = sorted(range(len(exAnteOdds)), key=lambda k: exAnteOdds[k])
 
-
         for i in range(len(exAnteOdds)):
-            print(str(exAnteOdds[i]) + " : " + str(race.finished.index(exAnteOdds[i])) +  " : " + str(i))
+            print(
+                str(exAnteOdds[i])
+                + " : "
+                + str(race.finished.index(exAnteOdds[i]))
+                + " : "
+                + str(i)
+            )
             if race.finished.index(exAnteOdds[i]) < i:
                 better[i] += 1
                 print("bettor")
@@ -71,12 +75,9 @@ def main():
             if race.winner == exAnteOdds[i]:
                 horseByOdds[i] += 1
 
-
         #
         # if c == race.winner:
         #     faveWinPercentage += 1
-
-
 
         currentSimulation = currentSimulation + 1
 
@@ -92,9 +93,6 @@ def main():
     print(better)
     print(worse)
     print(same)
-
-
-
 
 
 if __name__ == "__main__":

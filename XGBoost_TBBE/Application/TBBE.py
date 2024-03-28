@@ -207,6 +207,13 @@ class Session:
             # if name == 'Arbitrage2': return Agent_Arbitrage2(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod)
             # if name == 'Priveledged': return Agent_Priveledged(id, name, self.lengthOfRace, self.endOfInPlayBettingPeriod)
 
+            # Extract the model type for XGBoost agents
+            model_type = None
+            if name.startswith("XGBoostBettingAgent"):
+                name, model_type = name.rsplit(
+                    "_", 1
+                )  # Split to get the model type ('xgb1' or 'xgb2')
+
             if name == "Agent_Opinionated_Random":
                 return Agent_Opinionated_Random(
                     id,
@@ -280,8 +287,8 @@ class Session:
                     MIN_OP,
                     MAX_OP,
                 )
-            if name == "XGBoost1BettingAgent":
-                return XGBoost1BettingAgent(
+            if name == "XGBoostBettingAgent" and model_type is not None:
+                return XGBoostBettingAgent(
                     id,
                     name,
                     self.lengthOfRace,
@@ -291,14 +298,15 @@ class Session:
                     uncertainty,
                     MIN_OP,
                     MAX_OP,
-                )
+                    model_type=model_type,
+                )  #
 
         id = 0
         for agent in config.agents:
-            type = agent[0]
+            agent_type = agent[0]
             for i in range(agent[1]):
-                self.bettingAgents[id] = initAgent(agent[0], agent[1], id)
-                id = id + 1
+                self.bettingAgents[id] = initAgent(agent_type, agent[1], id)
+                id += 1
 
     def initialiseExchanges(self):
         """
@@ -333,7 +341,7 @@ class Session:
         """
         Read in race data and update agent queues with competitor distances at timestep
         """
-        filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/race_event_core.csv"
+        filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/race_event_core.csv"
         with open(filename, "r") as file:  # RACE_DATA_FILENAME
             reader = csv.reader(file)
             r = [row for index, row in enumerate(reader) if index == timestep]
@@ -497,7 +505,7 @@ class BBE(Session):
             currentSimulation = currentSimulation + 1
 
         # Opinion Dynamics results:
-        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/1000simXgb1Data/"
+        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
 
         opinion_hist_df = pandas.DataFrame.from_dict(self.session.opinion_hist)
         opinion_hist_df.to_csv(path + "opinions.csv", index=False)
