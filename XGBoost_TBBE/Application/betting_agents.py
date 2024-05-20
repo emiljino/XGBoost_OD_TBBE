@@ -1111,11 +1111,19 @@ class XGBoostBettingAgent(BettingAgent):
         self.model_type = model_type
         self.xgb_loaded_model = xgb.Booster()
 
+        ### added these two lines for xgb1_pred
+        # self.xgb1_loaded_model = xgb.Booster()
+        # self.xgb1_loaded_model.load_model("Trained_XGB1_model.json")
+
         # specifying which model to load
         if self.model_type == "xgb1":
-            model_file = "Trained_XGB1_model.json"
+            model_file = "trained_xgboost_model.json"  # Trained_XGB1_model.json"
         elif self.model_type == "xgb2":
-            model_file = "Trained_XGB2_model2.json"
+            model_file = "Trained_XGBRep_model.json"  # Trained_XGB2_model_.json"
+        elif self.model_type == "xgb3":
+            model_file = "Trained_XGB1_model.json"  # Trained_XGB3_model.json"
+        elif self.model_type == "xgb4":
+            model_file = "Trained_XGB4_model.json"
         else:
             raise ValueError("Invalid model type")
 
@@ -1131,6 +1139,7 @@ class XGBoostBettingAgent(BettingAgent):
             order = self.orders.pop()
         return order
 
+    ####OG make_decision#####
     def make_decision(self, time, stake, distance, rank):
         # """Make a decision (bet/lay) based on the XGBoost model's prediction."""
         df = pd.DataFrame(
@@ -1146,10 +1155,34 @@ class XGBoostBettingAgent(BettingAgent):
             print("decision >>> ", decision)
         return decision
 
+    # def make_decision(self, time, stake, distance, rank, xgb1_pred=None):
+    #     df = pd.DataFrame(
+    #         {"time": [time], "stake": [stake], "distance": [distance], "rank": [rank]}
+    #     )
+
+    #     if self.model_type == "xgb2":
+    #         df["xgb1_pred"] = [xgb1_pred]
+
+    #     dmatrix_data = DMatrix(df)
+    #     prediction = self.xgb_loaded_model.predict(dmatrix_data)[0]
+    #     decision = 1 if prediction > 0.5 else 0
+    #     if decision == 1:
+    #         print("decision >>> ", decision)
+    #     return decision
+
     # def make_decision(self, features):
     #     """Make a decision (bet/lay) based on the XGBoost model's prediction."""
     #     prediction = self.xgb_loaded_model.predict([features])
     #     return prediction[0]
+
+    # def get_xgb1_prediction(self, time, stake, distance, rank):
+    #     # Create a DataFrame with the necessary features for XGB1 prediction
+    #     df = pd.DataFrame(
+    #         {"time": [time], "stake": [stake], "distance": [distance], "rank": [rank]}
+    #     )
+    #     dmatrix_data = DMatrix(df)
+    #     xgb1_pred = self.xgb1_loaded_model.predict(dmatrix_data)[0]
+    #     return xgb1_pred
 
     def respond(self, time, markets, trade):
         if self.bettingPeriod == False:
@@ -1168,7 +1201,16 @@ class XGBoostBettingAgent(BettingAgent):
 
             for rank, (competitor, distance) in enumerate(sortedComps):
                 # print(time,distance,rank+1)
-                decision = self.make_decision(time, 15, distance, rank + 1)
+                # if self.model_type == "xgb2":
+                #     xgb1_pred = self.get_xgb1_prediction(time, 15, distance, rank + 1)
+                #     decision = self.make_decision(
+                #         time, 15, distance, rank + 1, xgb1_pred
+                #     )
+                # else:
+                #     decision = self.make_decision(time, 15, distance, rank + 1)
+                # xgb1_pred = self.get_xgb1_prediction(time, 15, distance, rank + 1) # added this
+
+                decision = self.make_decision(time, 15, distance, rank + 1)  # OG code
                 if decision == 1:  ## Decision = back
                     if markets[self.exchange][competitor]["backs"]["n"] > 0:
                         quoteodds = max(

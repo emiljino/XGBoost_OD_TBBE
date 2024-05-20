@@ -341,7 +341,7 @@ class Session:
         """
         Read in race data and update agent queues with competitor distances at timestep
         """
-        filename = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/race_event_core.csv"
+        filename = "/Volumes/T9/XGBoost_OD_TBBE/XGBoostTBBE/data/race_event_core.csv"
         with open(filename, "r") as file:  # RACE_DATA_FILENAME
             reader = csv.reader(file)
             r = [row for index, row in enumerate(reader) if index == timestep]
@@ -505,7 +505,7 @@ class BBE(Session):
             currentSimulation = currentSimulation + 1
 
         # Opinion Dynamics results:
-        path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/100sim65Xgb2StatData2/"
+        path = "/Volumes/T9/XGBoost_OD_TBBE/XGBoostTBBE/data/"
 
         opinion_hist_df = pandas.DataFrame.from_dict(self.session.opinion_hist)
         opinion_hist_df.to_csv(path + "opinions.csv", index=False)

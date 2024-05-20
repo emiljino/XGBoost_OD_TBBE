@@ -33,7 +33,18 @@
 # ]
 
 
-agents = [  # with both xgb models
+# agents = [  # with both xgb models
+#     ("Agent_Opinionated_Random", 10),
+#     ("Agent_Opinionated_Leader_Wins", 10),
+#     ("Agent_Opinionated_Underdog", 10),
+#     ("Agent_Opinionated_Back_Favourite", 10),
+#     ("Agent_Opinionated_Linex", 10),
+#     ("Agent_Opinionated_Priviledged", 5),
+#     ("XGBoostBettingAgent_xgb1", 5),
+#     ("XGBoostBettingAgent_xgb2", 5),
+# ]
+
+agents = [  # with 3 xgb models
     ("Agent_Opinionated_Random", 10),
     ("Agent_Opinionated_Leader_Wins", 10),
     ("Agent_Opinionated_Underdog", 10),
@@ -42,17 +53,20 @@ agents = [  # with both xgb models
     ("Agent_Opinionated_Priviledged", 5),
     ("XGBoostBettingAgent_xgb1", 5),
     ("XGBoostBettingAgent_xgb2", 5),
+    ("XGBoostBettingAgent_xgb3", 5),
 ]
 
-
-# agents = [  # 10 xgb1 for xgb2 training
+# agents = [  # with 4 xgb models
 #     ("Agent_Opinionated_Random", 10),
 #     ("Agent_Opinionated_Leader_Wins", 10),
 #     ("Agent_Opinionated_Underdog", 10),
 #     ("Agent_Opinionated_Back_Favourite", 10),
 #     ("Agent_Opinionated_Linex", 10),
 #     ("Agent_Opinionated_Priviledged", 5),
-#     ("XGBoostBettingAgent_xgb1", 10),
+#     ("XGBoostBettingAgent_xgb1", 5),
+#     ("XGBoostBettingAgent_xgb2", 5),
+#     ("XGBoostBettingAgent_xgb3", 5),
+#     ("XGBoostBettingAgent_xgb4", 5),
 # ]
 
 

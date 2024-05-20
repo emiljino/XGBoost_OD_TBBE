@@ -28,7 +28,7 @@ EXCHANGE_VERBOSE = False
 # Event Attributes
 # average horse races are between 5 and 12 (1005 - 2414) furlongs or could go min - max (400 - 4000)
 # RACE_LENGTH = 500
-RACE_LENGTH = 500
+RACE_LENGTH = 2000
 MIN_RACE_LENGTH = 400
 MAX_RACE_LENGTH = 4000
 

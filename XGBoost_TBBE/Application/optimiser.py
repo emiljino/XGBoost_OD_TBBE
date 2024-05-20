@@ -16,7 +16,7 @@ from system_constants import NUM_OF_SIMS
 
 
 def parseBalance(agentId):
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/Data/"
+    path = "/Volumes/T9/XGBoost_OD_TBBE/XGBoostTBBE/data/"
     finalBalance = 0
     for i in range(NUM_OF_SIMS):
         print("str", str(i))
@@ -99,7 +99,7 @@ def hillclimbing(agentId, bounds, n_iterations, step_size):
 
 
 def saveResults(best, score, scores):
-    path = "/Volumes/Kingston XS2000 Media/XGBoost_OD_TBBE/XGBoostTBBE/Data/"
+    path = "/Volumes/T9/XGBoost_OD_TBBE/XGBoostTBBE/Data/"
     fileName = path + "optimiser_results.csv"
 
     with open(fileName, "w", newline="") as file:
