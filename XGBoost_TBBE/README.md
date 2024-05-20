@@ -1,12 +1,13 @@
 # XGBoost_TBBE
 
-### This is code for A XGBoost-Agent Based model in In-Play Betting on a Sports Betting Exchange dissertation
+### This is the code for Iterative XGBoost-Agent Training in the Bristol Betting Exchange (BBE) Platform.
 
-This project is an extension of the Multi-threaded BBE (Bristol Betting Exchange) integrated with Opinion Dynamics Platform, originally developed by [Guzelyte](https://github.com/Guzelyte/TBBE_OD) and further extended by [Terawong](https://github.com/Terawong).
+This project is an extension of the Multi-threaded BBE (Bristol Betting Exchange) integrated with Opinion Dynamics Platform, originally developed by [Guzelyte](https://github.com/Guzelyte/TBBE_OD) and further extended by [Terawong](https://github.com/ChawinT/XGBoost_TBBE).
 
 In this version, I have modified the agent called `XGBoostBettingAgent`, existing in the `betting_agents.py` file located in the Application folder. This agent now has the capability to load multiple different models trained in [XGBoost_ModelTraining].
 
-The main objective of this project is to train iterative XGBoost agents. This is achieved by leveraging the existing codebase and adding functionality to load multiple XGBoost agents.
+The main objective of this project is to train iterative XGBoost agents. This is achieved by leveraging the existing codebase and adding functionality to load multiple XGBoost agents, then training a new version using data from the previous iteration.
+
 Basic steps for running the BBE (Bristol Betting Exchange):
 
 1. In config.py -> Initialise the agents list. Below is the example of the latest agent list:
