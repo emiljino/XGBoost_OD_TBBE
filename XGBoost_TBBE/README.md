@@ -40,8 +40,6 @@ Basic steps for running the BBE (Bristol Betting Exchange):
 
 3. "RUN" the session -> In the terminal type "python TBBE.py" to run the session. The session will start and finish after the number of simulations specified in systems_constant.py is completed. The results will be saved in the data folder.
 
-4. Many result files will be generated. Please look at session_stats.py file for how each file is generated, the path to the data folder can be specified to save to a different location if needed due to large file size.
-
-5. For each simulation specified in `NUM_OF_SIMS`, several result files will be generated. These include `getXGBoostTrainingData.csv`, `final_balances.csv`, `prices_histories.csv`, `prices_spreads.csv`, `transactions.csv`, and a `race_event_core.csv` file. Please refer to the `session_stats.py` file for details on each file. Due to the large size of these files, the path of the data folder can be specifed to a different location.
+4. For each simulation specified in `NUM_OF_SIMS`, several result files will be generated. These include `getXGBoostTrainingData.csv`, `final_balances.csv`, `prices_histories.csv`, `prices_spreads.csv`, `transactions.csv`, and a `race_event_core.csv` file. Please refer to the `session_stats.py` file for details on each file. Due to the large size of these files, the path of the data folder can be specifed to a different location.
 
 ### This repositry doesn't contain data files due to the large file size. The training and testing data can be collected from running sessions in BBE using the setup in the dissertation.
