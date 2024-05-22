@@ -19,7 +19,7 @@ Main code:
 
 2. XGBRepTraining.ipynb
 
-   The preprocessing and iterative training of the replicated agent, trained on data generated from BBE and in the same process as Terawongs original model.
+   The preprocessing and iterative training of the replicated agent, trained on data generated from BBE and in the same process as [Terawongs] original model.
 
 3. StatTestXGB1.ipynb
    StatTestXGB2.ipynb
