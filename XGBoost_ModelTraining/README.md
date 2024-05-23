@@ -19,7 +19,7 @@ Main code:
 
 2. XGBRepTraining.ipynb
 
-   The preprocessing and iterative training of the replicated agent, trained on data generated from BBE and in the same process as [Terawongs] original model.
+   The preprocessing and training of the replicated agent, trained on data generated from BBE and in the same process as [Terawongs] original model.
 
 3. StatTestXGB1.ipynb
    StatTestXGB2.ipynb
@@ -32,6 +32,6 @@ Main code:
 
 4. Others
 
-   The data folder is intended to contain the merged form of the results generated from BBE that will be used for training and testing the XGBoost agents.
+   The data folder is intended to contain the merged form of the results generated from BBE that will be used for training and testing of the XGBoost agents.
 
-## This repositry doesn't contain training and testing data due to the large file size. The data can be collected from running sessions in TBBE using the setup in the dissertation.
+## This repositry doesn't contain training and testing data due to the large file sizes. The data can be collected from running sessions in TBBE using the setup in the dissertation.

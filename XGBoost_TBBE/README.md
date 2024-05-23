@@ -42,4 +42,4 @@ Basic steps for running the BBE (Bristol Betting Exchange):
 
 4. For each simulation specified in `NUM_OF_SIMS`, several result files will be generated. These include `getXGBoostTrainingData.csv`, `final_balances.csv`, `prices_histories.csv`, `prices_spreads.csv`, `transactions.csv`, and a `race_event_core.csv` file. Please refer to the `session_stats.py` file for details on each file. Due to the large size of these files, the path of the data folder can be specifed to a different location.
 
-### This repositry doesn't contain data files due to the large file size. The training and testing data can be collected from running sessions in BBE using the setup in the dissertation.
+### This repositry doesn't contain data files due to the large file sizes. The training and testing data can be collected from running sessions in BBE using the setup in the dissertation.
